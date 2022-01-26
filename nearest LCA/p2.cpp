@@ -10,7 +10,7 @@ using namespace std;
 
 int nVertices, nEdges;
 bool works = true, haveAnswer = false;
-  vector < vector <int> > graph;
+vector < vector <int> > graph;
 
 // ------------------------------------------
 // in and out control for nodes
@@ -20,14 +20,17 @@ struct Node {
 
 // ------------------------------------------
 
-void isCyclic(int vertice , vector<bool> flag  ){
+void isCyclic(int vertice , vector<int> &flag ){
 
-  flag[vertice] = true;
+  flag[vertice] = 1;
 
   for(int ancestral : graph[vertice]){
-    if(flag[ancestral] == true) works = false;
-    else if(flag[ancestral] == false) isCyclic(ancestral, flag);
+    if(flag[ancestral] == 2) continue;
+    else if(flag[ancestral] == 1) works = false;
+    else if(flag[ancestral] == 0) isCyclic(ancestral, flag);
   }
+
+  flag[vertice] = 0;
 
 }
 
@@ -101,8 +104,8 @@ int main(){
   cin >> nVertices >> nEdges;
 
   // graph and flags alocation
-  graph.resize(nVertices+2);
-  vector <bool> flag(nVertices+2, false);
+  graph.resize(nVertices+1);
+  vector <int> flag(nVertices+1, 0);
 
   // graph input
   for(int i=0; i<nEdges; i++){
@@ -112,17 +115,13 @@ int main(){
     graph[son].push_back(dad);
   }
 
-  // cout << "| ";
-  // for(int i=0; i<=nVertices; i++) cout << i << " | ";
-  // cout << endl;
-
   // genealogic exeptions treatment
   for(int i=nVertices; i>0; --i){
     isCyclic(i , flag);
     if ( (graph[i].size() > 2) or not works) {
       cout << "0" << endl;
       return 0; // stop the code
-    }
+    }else flag[i] = 2;
   }
 
   // FINALLY THE NEAREST LCA
