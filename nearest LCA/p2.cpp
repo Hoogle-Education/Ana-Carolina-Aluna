@@ -21,7 +21,10 @@ struct Node {
 
 // ------------------------------------------
 
-bool dfs(int vertice, vector<int> graph[], vector<int> &flag){
+bool dfs(int vertice, vector<int> graph[], vector<int> &flag ){
+
+  // two progenitors limitation
+  if(graph[vertice].size() > 2) return false;
 
   stack <int> processor;
   flag[vertice] = 1; // visited
@@ -35,6 +38,8 @@ bool dfs(int vertice, vector<int> graph[], vector<int> &flag){
     if(debugDFS) cout << "acessing: " << top << endl;
 
     for(int ancestral : graph[top]){
+
+      if(graph[ancestral].size() > 2) return false;
 
       if(debugDFS) cout << ancestral << " ancestral of " << top << " has " << flag[ancestral] << " flag\n";
 
@@ -64,6 +69,24 @@ bool dfs(int vertice, vector<int> graph[], vector<int> &flag){
 }
 
 // ------------------------------------------
+
+void LCA(int yellow, int red, vector <int> graph, set <int> &answer){
+
+  vector <char> colorFlag(nVertices+1, 'w');
+  // w -> white -> without color
+  // y -> just ancestral of yellow
+  // r -> just ancestral of red
+  // b -> common ancestrals
+
+  // coloring the main nodes
+  colorFlag[yellow] = 'y';  
+  colorFlag[red] = 'r';
+
+  // dfs starting in yellow
+
+}
+
+// ------------------------------------------
 // the main
 
 int main(){
@@ -79,7 +102,6 @@ int main(){
   // graph and flags alocation
   vector <int> graph[nVertices+1];
   vector <int> flag(nVertices+1, 0);
-  vector <Node> degree(nVertices);
 
   // graph input
   for(int i=0; i<nEdges; i++){
