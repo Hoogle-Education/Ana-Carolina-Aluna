@@ -61,7 +61,7 @@ bool dfs(int vertice, vector<int> graph[], vector<int> &flag ){
   }
 
   // just remove my temporary flags
-  for(int i=0; i<nVertices; i++) {
+  for(int i=1; i<=nVertices; i++) {
     if(flag[i] == 1) flag[i] = 0;
   }
 
@@ -161,7 +161,7 @@ int main(){
   }
 
   // exceptions treatment
-  for(int i=nVertices; i>0; i--){
+  for(int i=nVertices; i>0; --i){
     if ( dfs(i, graph, flag) ) flag[i] = 2;
     else {
       cout << "0" << endl;
