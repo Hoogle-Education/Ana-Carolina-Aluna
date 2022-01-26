@@ -5,7 +5,7 @@
 #include <stack>
 #include <set>
 
-#define debugDFS false
+#define debugDFS true
 #define debugColors false
 
 using namespace std;
@@ -118,7 +118,7 @@ void LCA(int yellow, int red, vector <int> graph[] , set <int> &answer){
     cout << endl;
   } 
 
-  for(int i=1; i<= nVertices; i++){
+  for(int i=1; i<=nVertices; i++){
     if(colorFlag[i] == 'b'){
       for(int ancestral : graph[i]){
         if(colorFlag[ancestral] == 'b'){
@@ -172,12 +172,12 @@ int main(){
   // FINALLY THE NEAREST LCA
 
   set <int> nearestAncestrals;
-  LCA(v1, v2, graph, nearestAncestrals);
+  // LCA(v1, v2, graph, nearestAncestrals);
 
 
-  for(int valid : nearestAncestrals){
-    cout << valid << " ";
-  }
+  // for(int valid : nearestAncestrals){
+  //   cout << valid << " ";
+  // }
 
   if(nearestAncestrals.empty()) cout << "-";
 
