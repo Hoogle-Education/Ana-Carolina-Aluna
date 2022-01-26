@@ -5,68 +5,53 @@
 #include <stack>
 #include <set>
 
-#define debugDFS false
-#define debugColors false
-
 using namespace std;
 // ------------------------------------------
 // global variables
 
-long long nVertices, nEdges;
+int nVertices, nEdges;
 bool works = true;
 
 // ------------------------------------------
 // in and out control for nodes
 struct Node {
-  long long in = 0, out = 0;
+  int in = 0, out = 0;
 } node;
 
 // ------------------------------------------
 
-void isCyclic(long long vertice, vector<long long> graph[], vector<bool> flag ){
+void isCyclic(int vertice, vector<vector<int>> graph , vector<bool> flag ){
 
   flag[vertice] = true;
 
-  // cout << "| ";
-  // for(int x : flag) cout << x << " | ";
-  // cout << endl;
-
-  for(long long ancestral : graph[vertice]){
-
+  for(int ancestral : graph[vertice]){
     if(flag[ancestral] == true) works = false;
-    else if(flag[ancestral] == false){
-      isCyclic(ancestral, graph, flag);
-    }
-
+    else if(flag[ancestral] == false) isCyclic(ancestral, graph, flag);
   }
 
 }
 
 // ------------------------------------------
 
-void LCA(long long yellow, long long red, vector <long long> graph[] , set <long long> &answer){
+void LCA(int yellow, int red, vector <vector <int>> graph, set <int> &answer){
 
-  vector <char> colorFlag(nVertices+1, 'w');
-  // w -> white -> without color
-  // y -> just ancestral of yellow
-  // r -> just ancestral of red
-  // b -> common ancestrals
+  vector <char> colorFlag(nVertices+2, 'w');
+  stack <int> processor;
+  vector <Node> degree(nVertices+2);
 
   // coloring the main nodes
   colorFlag[yellow] = 'y';  
   colorFlag[red] = 'r';
-  stack <long long> processor;
-  vector <Node> degree(nVertices+1);
 
   // dfs starting in yellow
   processor.push(yellow);
   while (not processor.empty()) {
 
-    long long top = processor.top();
+    int top = processor.top();
     colorFlag[top] = 'y';
     processor.pop();
 
-    for(long long ancestral : graph[top] ) processor.push(ancestral);
+    for(int ancestral : graph[top] ) processor.push(ancestral);
     
   }
 
@@ -74,26 +59,17 @@ void LCA(long long yellow, long long red, vector <long long> graph[] , set <long
   processor.push(red);
   while (not processor.empty()) {
 
-    long long top = processor.top();
-
+    int top = processor.top();
     if(colorFlag[top] == 'y') colorFlag[top] = 'b';
     else if(colorFlag[top] == 'w') colorFlag[top] = 'r';
-
     processor.pop();
 
-    for(long long ancestral : graph[top] ) processor.push(ancestral);
+    for(int ancestral : graph[top] ) processor.push(ancestral);
   }
-
-  if(debugColors){
-    for(long long i=0; i<=nVertices; i++) cout << i << " ";
-    cout << endl;
-    for(char color : colorFlag) cout << color << " ";
-    cout << endl;
-  } 
 
   for(int i=1; i<=nVertices; i++){
     if(colorFlag[i] == 'b'){
-      for(long long ancestral : graph[i]){
+      for(int ancestral : graph[i]){
         if(colorFlag[ancestral] == 'b'){
           degree[i].in++;
           degree[ancestral].out++;
@@ -102,7 +78,7 @@ void LCA(long long yellow, long long red, vector <long long> graph[] , set <long
     }
   }
 
-  for(long long i=1; i<=nVertices; i++){
+  for(int i=1; i<=nVertices; i++){
     if(degree[i].out == 0 and colorFlag[i] == 'b') answer.insert(i);
   }
 
@@ -117,17 +93,17 @@ int main(){
   ios::sync_with_stdio(false);
 
   // general inputs
-  long long v1, v2;
+  int v1, v2;
   cin >> v1 >> v2;
   cin >> nVertices >> nEdges;
 
   // graph and flags alocation
-  vector <long long> graph[nVertices+1];
-  vector <bool> flag(nVertices+1, 0);
+  vector < vector <int> > graph (nVertices+2);
+  vector <bool> flag(nVertices+2, false);
 
   // graph input
-  for(long long i=0; i<nEdges; i++){
-    long long dad, son;
+  for(int i=0; i<nEdges; i++){
+    int dad, son;
     cin >> dad >> son;
 
     graph[son].push_back(dad);
@@ -138,7 +114,7 @@ int main(){
   // cout << endl;
 
   // genealogic exeptions treatment
-  for(long long i=nVertices; i>0; --i){
+  for(int i=1; i<=nVertices; i++){
     isCyclic(i, graph, flag);
     if ( (graph[i].size() > 2) or not works) {
       cout << "0" << endl;
@@ -147,12 +123,11 @@ int main(){
   }
 
   // FINALLY THE NEAREST LCA
-  set <long long> nearestAncestrals;
+  set <int> nearestAncestrals;
   LCA(v1, v2, graph, nearestAncestrals);
 
-
   // found any LCA?
-  for(long long valid : nearestAncestrals){
+  for(int valid : nearestAncestrals){
     cout << valid << " ";
   }
 
