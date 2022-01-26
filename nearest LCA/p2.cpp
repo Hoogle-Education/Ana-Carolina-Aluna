@@ -1,10 +1,11 @@
 // ------------------------------------------
 // headers and definitions
-#include <iostream>
+#include <stdio.h>
 #include <vector>
 #include <stack>
 
 using namespace std;
+
 // ------------------------------------------
 // global variables
 
@@ -83,7 +84,7 @@ void LCA(int yellow, int red ){
 
   for(int i=1; i<=nVertices; i++){
     if(degree[i].out == 0 and colorFlag[i] == 'b'){
-      cout << i << " ";
+      printf("%d ", i);
       haveAnswer = true;
     } 
   }
@@ -95,13 +96,10 @@ void LCA(int yellow, int red ){
 
 int main(){
 
-  // desynchronizing stdio optimization
-  ios::sync_with_stdio(false);
-
   // general inputs
   int v1, v2;
-  cin >> v1 >> v2;
-  cin >> nVertices >> nEdges;
+  scanf(" %d %d", &v1, &v2);
+  scanf(" %d %d", &nVertices, &nEdges);
 
   // graph and flags alocation
   graph.resize(nVertices+1);
@@ -110,7 +108,7 @@ int main(){
   // graph input
   for(int i=0; i<nEdges; i++){
     int dad, son;
-    cin >> dad >> son;
+    scanf(" %d %d", &dad, &son);
 
     graph[son].push_back(dad);
   }
@@ -119,7 +117,7 @@ int main(){
   for(int i=nVertices; i>0; --i){
     isCyclic(i , flag);
     if ( (graph[i].size() > 2) or not works) {
-      cout << "0" << endl;
+      puts("0");
       return 0; // stop the code
     }else flag[i] = 2;
   }
@@ -128,9 +126,9 @@ int main(){
   LCA(v1, v2);
 
   // not found!
-  if(not haveAnswer) cout << "-";
+  if(not haveAnswer) printf("-");
 
-  cout << endl;
+  printf("\n");
   return 0;
 }
 
