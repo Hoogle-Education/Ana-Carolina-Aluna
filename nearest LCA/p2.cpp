@@ -3,14 +3,14 @@
 #include <iostream>
 #include <vector>
 #include <stack>
-#include <set>
 
 using namespace std;
 // ------------------------------------------
 // global variables
 
 int nVertices, nEdges;
-bool works = true;
+bool works = true, haveAnswer = false;
+  vector < vector <int> > graph;
 
 // ------------------------------------------
 // in and out control for nodes
@@ -20,20 +20,20 @@ struct Node {
 
 // ------------------------------------------
 
-void isCyclic(int vertice, vector<vector<int>> graph , vector<bool> flag ){
+void isCyclic(int vertice , vector<bool> flag  ){
 
   flag[vertice] = true;
 
   for(int ancestral : graph[vertice]){
     if(flag[ancestral] == true) works = false;
-    else if(flag[ancestral] == false) isCyclic(ancestral, graph, flag);
+    else if(flag[ancestral] == false) isCyclic(ancestral, flag);
   }
 
 }
 
 // ------------------------------------------
 
-void LCA(int yellow, int red, vector <vector <int>> graph, set <int> &answer){
+void LCA(int yellow, int red ){
 
   vector <char> colorFlag(nVertices+2, 'w');
   stack <int> processor;
@@ -79,7 +79,10 @@ void LCA(int yellow, int red, vector <vector <int>> graph, set <int> &answer){
   }
 
   for(int i=1; i<=nVertices; i++){
-    if(degree[i].out == 0 and colorFlag[i] == 'b') answer.insert(i);
+    if(degree[i].out == 0 and colorFlag[i] == 'b'){
+      cout << i << " ";
+      haveAnswer = true;
+    } 
   }
 
 }
@@ -98,7 +101,7 @@ int main(){
   cin >> nVertices >> nEdges;
 
   // graph and flags alocation
-  vector < vector <int> > graph (nVertices+2);
+  graph.resize(nVertices+2);
   vector <bool> flag(nVertices+2, false);
 
   // graph input
@@ -114,8 +117,8 @@ int main(){
   // cout << endl;
 
   // genealogic exeptions treatment
-  for(int i=1; i<=nVertices; i++){
-    isCyclic(i, graph, flag);
+  for(int i=nVertices; i>0; --i){
+    isCyclic(i , flag);
     if ( (graph[i].size() > 2) or not works) {
       cout << "0" << endl;
       return 0; // stop the code
@@ -123,16 +126,10 @@ int main(){
   }
 
   // FINALLY THE NEAREST LCA
-  set <int> nearestAncestrals;
-  LCA(v1, v2, graph, nearestAncestrals);
-
-  // found any LCA?
-  for(int valid : nearestAncestrals){
-    cout << valid << " ";
-  }
+  LCA(v1, v2);
 
   // not found!
-  if(nearestAncestrals.empty()) cout << "-";
+  if(not haveAnswer) cout << "-";
 
   cout << endl;
   return 0;
