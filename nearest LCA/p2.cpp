@@ -31,7 +31,7 @@ void isCyclic(int vertice , vector<int> &flag ){
     else if(flag[ancestral] == 0) isCyclic(ancestral, flag);
   }
 
-  flag[vertice] = 0;
+  flag[vertice] = 2;
 
 }
 
@@ -115,11 +115,15 @@ int main(){
 
   // genealogic exeptions treatment
   for(int i=nVertices; i>0; --i){
+
+    if(flag[i] == 2) continue;
+
     isCyclic(i , flag);
+    
     if ( (graph[i].size() > 2) or not works) {
       puts("0");
       return 0; // stop the code
-    }else flag[i] = 2;
+    }
   }
 
   // FINALLY THE NEAREST LCA
