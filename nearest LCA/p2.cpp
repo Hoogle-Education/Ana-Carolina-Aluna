@@ -5,7 +5,7 @@
 #include <stack>
 #include <set>
 
-#define debugDFS true
+#define debugDFS false
 #define debugColors false
 
 using namespace std;
