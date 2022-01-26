@@ -6,6 +6,7 @@
 #include <set>
 
 #define debugDFS false
+#define debugColors false
 
 using namespace std;
 // ------------------------------------------
@@ -70,7 +71,7 @@ bool dfs(int vertice, vector<int> graph[], vector<int> &flag ){
 
 // ------------------------------------------
 
-void LCA(int yellow, int red, vector <int> graph, set <int> &answer){
+void LCA(int yellow, int red, vector <int> graph[] , set <int> &answer){
 
   vector <char> colorFlag(nVertices+1, 'w');
   // w -> white -> without color
@@ -81,8 +82,56 @@ void LCA(int yellow, int red, vector <int> graph, set <int> &answer){
   // coloring the main nodes
   colorFlag[yellow] = 'y';  
   colorFlag[red] = 'r';
+  stack <int> processor;
+  vector <Node> degree(nVertices+1);
 
   // dfs starting in yellow
+  processor.push(yellow);
+  while (not processor.empty()) {
+
+    int top = processor.top();
+    colorFlag[top] = 'y';
+    processor.pop();
+
+    for(int ancestral : graph[top] ) processor.push(ancestral);
+    
+  }
+
+   // dfs starting in reds and blacks
+  processor.push(red);
+  while (not processor.empty()) {
+
+    int top = processor.top();
+
+    if(colorFlag[top] == 'y') colorFlag[top] = 'b';
+    else if(colorFlag[top] == 'w') colorFlag[top] = 'r';
+
+    processor.pop();
+
+    for(int ancestral : graph[top] ) processor.push(ancestral);
+  }
+
+  if(debugColors){
+    for(int i=0; i<=nVertices; i++) cout << i << " ";
+    cout << endl;
+    for(char color : colorFlag) cout << color << " ";
+    cout << endl;
+  } 
+
+  for(int i=1; i<= nVertices; i++){
+    if(colorFlag[i] == 'b'){
+      for(int ancestral : graph[i]){
+        if(colorFlag[ancestral] == 'b'){
+          degree[i].in++;
+          degree[ancestral].out++;
+        }
+      }
+    }
+  }
+
+  for(int i=1; i<=nVertices; i++){
+    if(degree[i].out == 0 and colorFlag[i] == 'b') answer.insert(i);
+  }
 
 }
 
@@ -123,9 +172,16 @@ int main(){
   // FINALLY THE NEAREST LCA
 
   set <int> nearestAncestrals;
+  LCA(v1, v2, graph, nearestAncestrals);
 
-  if(nearestAncestrals.empty()) cout << "-" << endl;
 
+  for(int valid : nearestAncestrals){
+    cout << valid << " ";
+  }
+
+  if(nearestAncestrals.empty()) cout << "-";
+
+  cout << endl;
   return 0;
 }
 
