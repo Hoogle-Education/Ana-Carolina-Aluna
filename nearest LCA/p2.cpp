@@ -5,11 +5,21 @@
 #include <stack>
 #include <set>
 
+#define debugDFS false
+#define debugFlag false
+#define debugLCA false
+
 using namespace std;
 // ------------------------------------------
 // global variables
 
 int nVertices, nEdges;
+
+// ------------------------------------------
+// in and out control for nodes
+struct Node {
+  int in = 0, out = 0;
+} node;
 
 // ------------------------------------------
 
@@ -24,23 +34,23 @@ bool dfs(int vertice, vector<int> graph[], vector<int> &flag){
     int top = processor.top();
     processor.pop();
 
-    // cout << "acessing: " << top << endl; //DEBUG
+    if(debugDFS) cout << "acessing: " << top << endl;
 
     for(int ancestral : graph[top]){
 
-      // cout << ancestral << " ancestral of " << top << " has " << flag[ancestral] << " flag\n"; //DEBUG
+      if(debugDFS) cout << ancestral << " ancestral of " << top << " has " << flag[ancestral] << " flag\n";
 
       if(flag[ancestral] == 2) continue; // already works!
 
       if(flag[ancestral] == 1) {
-        // cout << "error founded! vertice: " << ancestral << "\n"; //DEBUG
+        if(debugDFS) cout << "error founded! vertice: " << ancestral << "\n";
         return false; // cycle founded
       }
 
       if(flag[ancestral] == 0){ // not visited ancestral
         processor.push(ancestral);
         flag[ancestral] = 1;
-        // cout << "going to " << ancestral << endl; // DEBUG
+        if(debugDFS) cout << "going to " << ancestral << endl;
       }
     }
 
@@ -71,6 +81,7 @@ int main(){
   // graph and flags alocation
   vector <int> graph[nVertices+1];
   vector <int> flag(nVertices+1, 0);
+  vector <Node> degree(nVertices);
 
   // graph input
   for(int i=0; i<nEdges; i++){
@@ -78,6 +89,8 @@ int main(){
     cin >> dad >> son;
 
     graph[son].push_back(dad);
+    degree[dad].out++;
+    degree[son].in++;
   }
 
   // exceptions treatment
@@ -92,6 +105,8 @@ int main(){
   // FINALLY THE NEAREST LCA
 
   set <int> nearestAncestrals;
+
+  if(debug) for(int i=1; i<=nVertices; i++) cout << "Vertice " << i << ": in = " << degree[i].in << " || out = " << degree[i].out << "\n";
 
   if(nearestAncestrals.empty()) cout << "-" << endl;
 
