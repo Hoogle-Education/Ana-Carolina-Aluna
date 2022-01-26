@@ -13,6 +13,7 @@ using namespace std;
 // global variables
 
 int nVertices, nEdges;
+bool works = true;
 
 // ------------------------------------------
 // in and out control for nodes
@@ -22,50 +23,22 @@ struct Node {
 
 // ------------------------------------------
 
-bool dfs(int vertice, vector<int> graph[], vector<int> &flag ){
+void isCyclic(int vertice, vector<int> graph[], vector<bool> flag ){
 
-  // two progenitors limitation
-  if(graph[vertice].size() > 2) return false;
+  flag[vertice] = true;
 
-  stack <int> processor;
-  flag[vertice] = 1; // visited
-  processor.push(vertice);
+  // cout << "| ";
+  // for(int x : flag) cout << x << " | ";
+  // cout << endl;
 
-  while(not processor.empty()){
+  for(int ancestral : graph[vertice]){
 
-    int top = processor.top();
-    processor.pop();
-
-    if(debugDFS) cout << "acessing: " << top << endl;
-
-    for(int ancestral : graph[top]){
-
-      if(graph[ancestral].size() > 2) return false;
-
-      if(debugDFS) cout << ancestral << " ancestral of " << top << " has " << flag[ancestral] << " flag\n";
-
-      if(flag[ancestral] == 2) continue; // already works!
-
-      if(flag[ancestral] == 1) {
-        if(debugDFS) cout << "error founded! vertice: " << ancestral << "\n";
-        return false; // cycle founded
-      }
-
-      if(flag[ancestral] == 0){ // not visited ancestral
-        processor.push(ancestral);
-        flag[ancestral] = 1;
-        if(debugDFS) cout << "going to " << ancestral << endl;
-      }
+    if(flag[ancestral] == true) works = false;
+    else if(flag[ancestral] == false){
+      isCyclic(ancestral, graph, flag);
     }
 
   }
-
-  // just remove my temporary flags
-  for(int i=1; i<=nVertices; i++) {
-    if(flag[i] == 1) flag[i] = 0;
-  }
-
-  return true;
 
 }
 
@@ -150,7 +123,7 @@ int main(){
 
   // graph and flags alocation
   vector <int> graph[nVertices+1];
-  vector <int> flag(nVertices+1, 0);
+  vector <bool> flag(nVertices+1, 0);
 
   // graph input
   for(int i=0; i<nEdges; i++){
@@ -160,25 +133,30 @@ int main(){
     graph[son].push_back(dad);
   }
 
-  // exceptions treatment
+  // cout << "| ";
+  // for(int i=0; i<=nVertices; i++) cout << i << " | ";
+  // cout << endl;
+
+  // genealogic exeptions treatment
   for(int i=nVertices; i>0; --i){
-    if ( dfs(i, graph, flag) ) flag[i] = 2;
-    else {
+    isCyclic(i, graph, flag);
+    if ( (graph[i].size() > 2) or not works) {
       cout << "0" << endl;
       return 0; // stop the code
     }
   }
 
   // FINALLY THE NEAREST LCA
-
   set <int> nearestAncestrals;
-  // LCA(v1, v2, graph, nearestAncestrals);
+  LCA(v1, v2, graph, nearestAncestrals);
 
 
-  // for(int valid : nearestAncestrals){
-  //   cout << valid << " ";
-  // }
+  // found any LCA?
+  for(int valid : nearestAncestrals){
+    cout << valid << " ";
+  }
 
+  // not found!
   if(nearestAncestrals.empty()) cout << "-";
 
   cout << endl;
