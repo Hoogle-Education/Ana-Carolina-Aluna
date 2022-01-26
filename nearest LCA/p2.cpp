@@ -6,8 +6,6 @@
 #include <set>
 
 #define debugDFS false
-#define debugFlag false
-#define debugLCA false
 
 using namespace std;
 // ------------------------------------------
@@ -89,8 +87,6 @@ int main(){
     cin >> dad >> son;
 
     graph[son].push_back(dad);
-    degree[dad].out++;
-    degree[son].in++;
   }
 
   // exceptions treatment
@@ -105,8 +101,6 @@ int main(){
   // FINALLY THE NEAREST LCA
 
   set <int> nearestAncestrals;
-
-  if(debug) for(int i=1; i<=nVertices; i++) cout << "Vertice " << i << ": in = " << degree[i].in << " || out = " << degree[i].out << "\n";
 
   if(nearestAncestrals.empty()) cout << "-" << endl;
 
