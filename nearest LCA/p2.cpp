@@ -50,19 +50,16 @@ void LCA(int yellow, int red ){
   // dfs starting in yellow
   processor.push(yellow);
   while (not processor.empty()) {
-
     int top = processor.top();
     colorFlag[top] = 'y';
     processor.pop();
 
     for(int ancestral : graph[top] ) processor.push(ancestral);
-    
   }
 
    // dfs starting in reds and blacks
   processor.push(red);
   while (not processor.empty()) {
-
     int top = processor.top();
     if(colorFlag[top] == 'y') colorFlag[top] = 'b';
     else if(colorFlag[top] == 'w') colorFlag[top] = 'r';
